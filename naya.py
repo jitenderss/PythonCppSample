@@ -6,11 +6,9 @@
 
 
 def pyfunction(a,b,c,d):
-    print "JJ SCHEDULER"
+    print "pyfunction"
     print a
-    #if not hasattr(sys, 'argv'):
-    #sys.argv  =  ['']
-    #print "lafda maadi"
+    
     #jj = (randint(0, 9))
     jj = 9;
     print jj
