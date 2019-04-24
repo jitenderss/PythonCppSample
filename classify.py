@@ -4,10 +4,10 @@ import sys
 import tensorflow as tf
 
 def evaluate(a):
-    print "JJ SCHEDULER"
+    print "evaluate"
     if not hasattr(sys, 'argv'):
         sys.argv  =  ['']
-        print "lafda maadi"
+        print "issue"
     image = Image.open(a)
     image = image.resize([256, 256])
     image_array = np.array(image)
