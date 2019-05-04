@@ -1,5 +1,28 @@
 #include <Python.h>
 #include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<float> listTupleToVector_Float(PyObject* incoming) {
+    vector<float> data;
+    if (PyTuple_Check(incoming)) {
+        for(Py_ssize_t i = 0; i < PyTuple_Size(incoming); i++) {
+            PyObject *value = PyTuple_GetItem(incoming, i);
+            data.push_back( PyFloat_AsDouble(value) );
+        }
+    } else {
+        if (PyList_Check(incoming)) {
+            for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) {
+                PyObject *value = PyList_GetItem(incoming, i);
+                data.push_back( PyFloat_AsDouble(value) );
+            }
+        } else {
+            throw logic_error("Passed PyObject pointer was not a list or tuple!");
+        }
+    }
+    return data;
+}
 
 
 int main(int argc, char * argv[])
@@ -39,84 +62,16 @@ int main(int argc, char * argv[])
     PyObject *arglist = Py_BuildValue("(O)", l);
     PyObject *pValue = PyObject_CallObject(pFunc, arglist);
     
+    vector<float> data = listTupleToVector_Float(pValue);
+    std::cout<<"Vector size :" << data.size() << std::endl;
+    
+    for (int i = 0; i < data.size(); ++i)
+        cout << data.at(i) << " ";
     
     std::cout<<"Finished!!!"<<std::endl;
     Py_Finalize();
     
-    
-    
-    
-#if 0
-    
-    Py_Initialize();
-    //PySys_SetArgv(argc, argv);
-    //PyRun_SimpleString("import sys\nprint sys.argv");
-    if ( !Py_IsInitialized() ) {
-        return -1;
-    }
-    PyRun_SimpleString("import sys");
-    PyRun_SimpleString("sys.path.append('/Users/jitendersingh/PythonEmbeddingC++')");
-    PyObject* pMod = NULL;
-    PyObject* pFunc = NULL;
-    PyObject* pParm = NULL;
-    PyObject* pRetVal = NULL;
-    int iRetVal = -999;
-    const char* modulName="naya";
-    
-    /* Error checking of pName left out */
-    
-    pMod = PyImport_ImportModule(modulName);
-    
-    if(!pMod)
-    {
-        std::cout<<"Import module failed!";
-        PyErr_Print();
-        return -1;
-    }
-    const char* funcName="pyfunction";
-    pFunc = PyObject_GetAttrString(pMod, funcName);
-    if(!pFunc)
-    {
-        std::cout<<"Import function failed!";
-        return -2;
-    }
-    
-    std::cout<<"Generated pylist"<<std::endl;
-    if(!PyCallable_Check(pFunc))
-    {
-        std::cout<<"Funcn not callable"<<std::endl;
-        return -1;
-    }
-    
-    int tuple_length = 4;
-    /*
-     PyObject *args = PyTuple_New(1);
-     PyTuple_SetItem(args, 0, PyInt_FromLong(42L));*/
-    PyObject *the_tuple = PyTuple_New(tuple_length);
-    PyObject *the_object;
-    
-    for(int i = 0; i < tuple_length; i++) {
-        the_object = PyInt_FromLong(5);//PyLong_FromSsize_t(i * tuple_length + j);
-        if(the_object == NULL) {
-            std::cout<<"PyLong_FromSsize_t failed"<<std::endl;
-            PyErr_Print();
-            return -1;
-        }
-        
-        PyTuple_SET_ITEM(the_tuple, i, the_object);
-    }
-    
-    std::cout<<"jjjjjjjjjjj"<<std::endl;
-    //pRetVal = PyEval_CallObject(pFunc, the_tuple);
-    
-    pRetVal = PyObject_CallObject(pFunc, the_tuple);
-    PyArg_Parse(pRetVal, "i", &iRetVal);
-    //PyErr_Print();
-    std::cout<<"kkkkkkkkkk"<<std::endl;
-    std::cout<<iRetVal<<std::endl;
-    Py_Finalize();
-    return iRetVal;
-#endif
+
 }
 
 
